@@ -6,7 +6,24 @@ const authService = {
   },
 
   register: async (username, email, password, passwordConfirm) => {
-    // TODO: POST /api/accounts/register/
+    const response = await fetch(`${API_BASE_URL}/accounts/register/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        username,
+        email,
+        password,
+        password_confirm: passwordConfirm,
+      }),
+    })
+
+    const data = await response.json()
+    if (!response.ok) {
+      throw data
+    }
+    return data
   },
 
   logout: async (refreshToken) => {
