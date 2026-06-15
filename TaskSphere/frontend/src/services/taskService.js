@@ -1,22 +1,76 @@
+import authService from './authService'
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000/api'
+
+const getAuthHeaders = () => {
+  const token = authService.getAccessToken()
+  return {
+    'Content-Type': 'application/json',
+    ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+  }
+}
+
 const taskService = {
   getTasks: async () => {
-    // TODO: GET /api/tasks/
+    const response = await fetch(`${API_BASE_URL}/tasks/`, {
+      method: 'GET',
+      headers: getAuthHeaders(),
+    })
+    const data = await response.json()
+    if (!response.ok) {
+      throw data
+    }
+    return data
   },
 
   getTask: async (id) => {
-    // TODO: GET /api/tasks/{id}/
+    const response = await fetch(`${API_BASE_URL}/tasks/${id}/`, {
+      method: 'GET',
+      headers: getAuthHeaders(),
+    })
+    const data = await response.json()
+    if (!response.ok) {
+      throw data
+    }
+    return data
   },
 
   createTask: async (taskData) => {
-    // TODO: POST /api/tasks/
+    const response = await fetch(`${API_BASE_URL}/tasks/`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(taskData),
+    })
+    const data = await response.json()
+    if (!response.ok) {
+      throw data
+    }
+    return data
   },
 
   updateTask: async (id, taskData) => {
-    // TODO: PUT /api/tasks/{id}/
+    const response = await fetch(`${API_BASE_URL}/tasks/${id}/`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(taskData),
+    })
+    const data = await response.json()
+    if (!response.ok) {
+      throw data
+    }
+    return data
   },
 
   deleteTask: async (id) => {
-    // TODO: DELETE /api/tasks/{id}/
+    const response = await fetch(`${API_BASE_URL}/tasks/${id}/`, {
+      method: 'DELETE',
+      headers: getAuthHeaders(),
+    })
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({}))
+      throw data
+    }
+    return true
   },
 }
 
