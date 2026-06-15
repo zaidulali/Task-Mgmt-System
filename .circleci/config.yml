@@ -1,0 +1,38 @@
+version: '2.1'
+
+jobs:
+  build-backend:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: default
+      - run:
+          name: Build Backend Docker Image
+          command: |
+            docker build -t tasksphere-backend:latest ./TaskSphere/backend
+
+  build-frontend:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: default
+      - run:
+          name: Build Frontend Docker Image
+          command: |
+            # Pull build arguments from CircleCI environment settings
+            # We add a fallback parameter if VITE_API_BASE_URL is not set on the dashboard
+            docker build \
+              --build-arg VITE_API_BASE_URL="${VITE_API_BASE_URL:-http://localhost:8000/api}" \
+              -t tasksphere-frontend:latest \
+              ./TaskSphere/frontend
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build-backend
+      - build-frontend
