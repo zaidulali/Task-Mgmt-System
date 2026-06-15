@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./TaskSphere/backend
+      dockerfile: Dockerfile
+    container_name: tasksphere-backend
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - SECRET_KEY=django-insecure-tasksphere-prod-key-change-me-in-production
+      - DEBUG=True
+      - ALLOWED_HOSTS=localhost,127.0.0.1,backend
+    volumes:
+      - db_data:/app
+    networks:
+      - tasksphere_net
+
+  frontend:
+    build:
+      context: ./TaskSphere/frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_BASE_URL=http://localhost:8000/api
+    container_name: tasksphere-frontend
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - tasksphere_net
+
+volumes:
+  db_data:
+
+networks:
+  tasksphere_net:
+    driver: bridge
